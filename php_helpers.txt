@@ -1,1 +1,102 @@
-﻿//paste our code here
+﻿//paste our code here of php "codeigniter" helper
+
+<?php
+
+function generate_img_tags_for_form($filed_name,$filed_label,$required_field="",$checkbox_field_name,$need_alt_title="yes",$required_alt_title="",$old_path_value="",$old_title_value="",$old_alt_value="",$recomended_size="",$disalbed="",$displayed_img_width="50"){
+    $filed_name_id=$filed_label."id";
+    $filed_name_id_jquery="#".$filed_name_id;
+    
+    $checkbox_field_name_id=$checkbox_field_name."id";
+    $checkbox_field_name_id_jquery="#".$checkbox_field_name_id;
+    
+    $title_field_name=$filed_label."title";
+    $alt_field_name=$filed_label."alt";
+
+    
+    $html_tags='<script type="text/javascript">';
+        $html_tags.='$(function(){';
+            $html_tags.='$("'.$checkbox_field_name_id_jquery.'").change(function(){';
+                $html_tags.='var check=$(this).is(":checked");';
+                $html_tags.='if (check==true) {';
+                    $html_tags.='$("'.$filed_name_id_jquery.'").removeAttr("disabled")';
+                $html_tags.='}';            
+                $html_tags.='else{';
+                    $html_tags.='$("'.$filed_name_id_jquery.'").attr("disabled","disabled");';
+                $html_tags.='}';
+            $html_tags.='});';
+        $html_tags.='});';
+    
+    $html_tags.='</script>';
+
+    $html_tags.='<div class="col-md-12 form-group">';    
+        $html_tags.='<label for="">'.$filed_label.' '.$recomended_size.'</label>';
+        $html_tags.='<div class="col-md-12">';
+        
+            $html_tags.='<div class="col-md-4">';
+                $html_tags.='<input type="file" class="form-control" name="'.$filed_name.'" '.$disalbed.' id="'.$filed_name_id.'" '.$required_field.' >';
+            $html_tags.='</div>';
+            
+            if ($need_alt_title=="yes") {
+                $html_tags.='<div class="col-md-4">';
+                    $html_tags.='<input type="text" class="form-control" placeholder="image title" name="'.$title_field_name.'" '.$required_alt_title.' value="'.$old_title_value.'">';
+                $html_tags.='</div>';
+
+                $html_tags.='<div class="col-md-4">';
+                    $html_tags.='<input type="text" class="form-control" placeholder="image alt" name="'.$alt_field_name.'" '.$required_alt_title.' value="'.$old_alt_value.'">';
+                $html_tags.='</div>';
+            }
+            
+        $html_tags.='</div>';
+        
+        if ($disalbed!="") {
+            $html_tags.='<div class="col-md-12">';
+                $html_tags.='<div class="col-md-4">';
+
+                    $html_tags.='<div class="row-fluid">';
+                        $html_tags.='<img src="'.$old_path_value.'" alt="'.$old_alt_value.'" title="'.$old_title_value.'" width="'.$displayed_img_width.'">';
+                    $html_tags.='</div>';
+
+                    $html_tags.='<div class="row-fluid">';
+                        $html_tags.='<input type="checkbox" name="'.$checkbox_field_name.'" id="'.$checkbox_field_name_id.'">:upload new image';
+                    $html_tags.='</div>';
+
+                $html_tags.='</div>';
+            $html_tags.='</div>';
+        }
+        
+        
+    $html_tags.='</div>';
+
+    return $html_tags;
+}
+
+function generate_inputs_html($labels_name , $fields_name , $required , $type , $values , $class)
+{
+    $html_tags = "";
+    
+    foreach ($fields_name as $key => $value) {
+        
+        $html_tags.='<div class="col-md-12 form-group">';    
+            $html_tags.='<label for="">'.$labels_name[$key].'</label>';
+            $html_tags.='<div>';
+            
+            if ($type[$key] == 'textarea') {
+                
+                $html_tags .= '<textarea name="'.$value.'" style="resize:vertical" class="form-control '.$class[$key].'" id="'.$fields_name[$key].'_id">'.$values[$key].'</textarea>';
+                
+            }
+            else{
+                
+                $html_tags.='<input type="'.$type[$key].'" class="form-control '.$class[$key].'" '.$required[$key].' name="'.$value.'" value="'.$values[$key].'" id="'.$fields_name[$key].'_id" >';
+                
+            }
+
+            $html_tags.='</div>';
+        $html_tags.='</div>';
+        
+    }
+    
+    
+    return $html_tags;
+    
+}
