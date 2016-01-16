@@ -1,5 +1,3 @@
-﻿//paste our code here of php "codeigniter" helper 
-
 <?php
 
 function generate_img_tags_for_form($filed_name,$filed_label,$required_field="",$checkbox_field_name,$need_alt_title="yes",$required_alt_title="",$old_path_value="",$old_title_value="",$old_alt_value="",$recomended_size="",$disalbed="",$displayed_img_width="50"){
@@ -100,3 +98,152 @@ function generate_inputs_html($labels_name , $fields_name , $required , $type , 
     return $html_tags;
     
 }
+
+//generate_array_input create array of items of array of fields field 
+//like that
+//(1)
+//<input type="text" name="field[]" value="1" />
+//<textarea>1</textarea>
+//(/1)
+//(2)
+//<input type="text" name="field[]" value="2" />
+//<textarea>2</textarea>
+//(/2)
+
+//$label_name,$field_name,$required,$type,$values,$class all of these prameters are arraies
+//except $values its array of arraies
+//$values = array(
+//  array("Home","First Page","About Us"),
+//  array("Home","First Page","About Us")
+//);
+function generate_array_input($label_name,$field_name,$required,$type,$values,$class,$add_tiny_mce=""){
+    
+    $field_id=$field_name[0]."_id";
+    $add_item_class=$field_name[0]."_add_item";
+    $remove_item_class=$field_name[0]."_remove_item";
+    
+    $contain_items_class=$field_name[0]."_contain_items";
+    $first_item_class=$field_name[0]."_first_item";
+    
+    $html_tag="";
+    $new_tags="";
+    
+    $html_tag.='<script type="text/javascript">'.PHP_EOL;
+        $html_tag.='$(function(){'.PHP_EOL;
+        
+            $html_tag.='$(".'.$remove_item_class.'").click(function(){'.PHP_EOL;
+                $html_tag.='$(this).parent().remove();'.PHP_EOL;
+                $html_tag.='return false;'.PHP_EOL;
+            $html_tag.='});'.PHP_EOL;
+            
+            $html_tag.='var text_area_counter='.(count($values[0])+1).' '.PHP_EOL;
+            
+            $html_tag.='$(".'.$add_item_class.'").click(function(){'.PHP_EOL;
+                $html_tag.='var new_id="'.$field_id.'"+"textarea"+text_area_counter'.PHP_EOL;
+                
+                $html_tag.=PHP_EOL.'console.log(new_id)'.PHP_EOL;
+                
+                $new_tags.='<div class="row" style="margin: 10px;">';
+                    $new_tags.='<div class="col-md-12">';
+
+                        foreach ($field_name as $key => $single_field) {
+                            $new_tags.='<label for="">'.$label_name[$key].'</label>';
+                            if ($type[$key]!="textarea") {
+                                $new_tags.='<input type="'.$type[$key].'" class="'.$class[$key].'" name="'.$field_name[$key].'[]">';
+                            }
+                            else{
+                                $new_tags.='<textarea id="new_id" class="'.$class[$key].'" style="resize:vertical" name="'.$field_name[$key].'[]"></textarea>';
+                                
+                                
+                            }
+
+                        }//end foreach
+                    $new_tags.='</div>';
+                $new_tags.='</div>';
+                
+                
+                
+                //$html_tag.='$(".'.$contain_items_class.'").append($(".'.$first_item_class.'").first().clone());';
+                $html_tag.='$(".'.$contain_items_class.'").append(\''.$new_tags.'\');'.PHP_EOL;
+                
+                $html_tag.='$("#new_id").attr("id",new_id);';
+                
+                if ($add_tiny_mce=="yes") {
+                    $html_tag.="/*tinymce.remove();*/window.tinymce.dom.Event.domLoaded = true;".PHP_EOL;
+                    $html_tag.='tinyMCE.init({ selector: "#"+new_id});'.PHP_EOL;
+                }
+                
+                //increase count of text_area_counter
+                $html_tag.='text_area_counter++;'.PHP_EOL;
+                $html_tag.='return false;'.PHP_EOL;
+            $html_tag.='});'.PHP_EOL;
+            
+        $html_tag.='});'.PHP_EOL;
+    $html_tag.='</script>'.PHP_EOL;
+
+    $html_tag.='<div class="col-md-12 form-group">';
+        $html_tag.='<label for="">'.$label_name[0].' Section </label>';
+        $html_tag.='<div class="col-md-12">';
+            
+        if (isset($values[0])&&count($values[0])&&is_array($values[0])) {
+            foreach ($values[0] as $value_key => $item_values) {
+                $html_tag.='<div class="row" style="margin: 10px;">';
+                foreach ($field_name as $field_key => $filed) {
+                    //$values[$field_key][$value_key]
+                        $html_tag.='<div class="col-md-12">';
+                            $html_tag.='<label for="">'.$label_name[$field_key].'</label>';
+                            if ($type[$field_key]!="textarea") {
+                                $html_tag.='<input type="'.$type[$field_key].'" class="'.$class[$field_key].'" name="'.$field_name[$field_key].'[]" value="'.$values[$field_key][$value_key].'">';
+                            }
+                            else{
+                                $html_tag.='<textarea class="'.$class[$field_key].'" style="resize:vertical" name="'.$field_name[$field_key].'[]">'.$values[$field_key][$value_key].'</textarea>';
+                            }
+                        $html_tag.='</div>';
+                   
+                }//end fileds foreach
+                $html_tag.='<button type="button" class="btn btn-danger '.$remove_item_class.'">Remove</button>';
+                $html_tag.='</div>';
+                
+            }//end values foreach 
+        }//end if 
+        
+        $html_tag.='</div>';
+        
+        $html_tag.='<div class="col-md-12 '.$contain_items_class.'">';
+            $html_tag.='<div class="row '.$first_item_class.'" style="margin: 10px;">';
+                $html_tag.='<div class="col-md-12">';
+                    
+                    foreach ($field_name as $key => $single_field) {
+                        $html_tag.='<label for="">'.$label_name[$key].'</label>';
+                        if ($type[$key]!="textarea") {
+                            $html_tag.='<input type="'.$type[$key].'" class="'.$class[$key].'" name="'.$field_name[$key].'[]">';
+                        }
+                        else{
+                            $html_tag.='<textarea id="tinymcetest" class="'.$class[$key].'" style="resize:vertical" name="'.$field_name[$key].'[]"></textarea>';
+                        }
+                        
+                    }//end foreach
+                $html_tag.='</div>';
+            $html_tag.='</div>';
+        $html_tag.='</div>';
+        
+        $html_tag.='<div class="col-md-12">';
+            $html_tag.='<button type="button" data-newid="'.(count($values[0])+1).'" class="btn btn-warning '.$add_item_class.'">Add Item</button>';
+        $html_tag.='</div>';
+
+        
+    $html_tag.='</div>';
+    
+    return $html_tag;
+}
+                
+function generate_slider_imgs_tags()
+{
+    //under construction
+}
+                
+                    
+                
+
+            
+
